@@ -7,23 +7,27 @@
 """
 
 
-transitions = { 
+transitions = {
+		's0':{'string.digits':'s1','.':'s2'},  
+		's1':{'.':'s3','string.digits':'s1'},
+		's2':{'string.digits':'s4','.':'s2'},
+		's3':{'string.digits':'s4'},
+        	's4':{'string.digits':'s4'}
 
-	# (Α) Συμπληρώστε τον πίνακα μεταβάσεων ως λεξικό (dictionary).
-	# Η αρχική κατάσταση πρέπει να ονομάζεται 's0'.
-	# Για λεπτομέρειες δείτε στο:
-	# http://mixstef.github.io/courses/compilers/lecturedoc/unit1/module1.html#id7
+	# (Α) Συμπληρώνω τον πίνακα των μεταβάσεων ως λεξικό (dictionary).
+	# Η αρχική κατάσταση είναι το 's0'.
+	# Οπου string.digits = 0...9
 
      	      } 
 
 
-accepts = { 
+accepts = {
+		's3':'FLOAT_TOKEN',
+       	 	's4':'FLOAT_TOKEN'
 
-	# (Β) Συμπληρώστε το λεξικό των καταστάσεων αποδοχής και των
+	# (Β) Συμπληρώνω το λεξικό των καταστάσεων αποδοχής και των
 	# αντίστοιχων επιστρεφόμενων συμβόλων (tokens)
-	# Για λεπτομέρειες δείτε στο:
-	# http://mixstef.github.io/courses/compilers/lecturedoc/unit1/module1.html#id8
-
+	
      	  }
 
 
@@ -34,12 +38,12 @@ def get_char(text,pos):
 	if pos<0 or pos>=len(text): return None
 	
 	c = text[pos]
+	if c>='0' and c<='9':
+			return 'string.digits'
 	
 	# (Γ) Προαιρετικά, μπορείτε να ομαδοποιήσετε τους
 	# χαρακτήρες εισόδου εδώ.
-	# Για λεπτομέρειες δείτε στο:
-	# http://mixstef.github.io/courses/compilers/lecturedoc/unit1/module1.html#id11
-	
+			
 	return c
 	
 
@@ -67,8 +71,9 @@ def scan(text,transitions,accepts,state):
 
 			# remember if current state is accepting
 			if state in accepts:
-				matched = { 'token':  accepts[state],
-					    'lexeme': text[:pos] }
+				matched = { 'lexeme': text[:pos], 
+					      'token':  accepts[state]
+						 }
 			
 		else:	# no transition found, return last match or None
 			return matched
@@ -78,5 +83,3 @@ def scan(text,transitions,accepts,state):
 for test in ['12.456','6789.','.66998','1234','.']:
 	m = scan(test,transitions,accepts,'s0')
 	print("Testing '{}'\nResult: {}\n".format(test,m))
-
-
